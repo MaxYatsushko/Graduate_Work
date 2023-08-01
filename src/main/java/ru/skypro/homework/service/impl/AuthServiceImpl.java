@@ -5,19 +5,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.model.Role;
 import ru.skypro.homework.service.AuthService;
+
+import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserDetailsManager manager;
     private final PasswordEncoder encoder;
+    private final UserService userService;
 
-    public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(UserDetailsManager manager, PasswordEncoder passwordEncoder, UserService userService) {
         this.manager = manager;
         this.encoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @Override
@@ -30,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean register(Register register) {
+    public boolean register(Register register, Role role) {
         if (manager.userExists(register.getUsername())) {
             return false;
         }
@@ -39,9 +44,29 @@ public class AuthServiceImpl implements AuthService {
                         .passwordEncoder(this.encoder::encode)
                         .password(register.getPassword())
                         .username(register.getUsername())
-                        .roles(register.getRole().name())
+                        .roles(role.name())
                         .build());
+        userService.registerUser(register, this.encoder.encode(register.getPassword()), role);
         return true;
+    }
+
+    @Override
+    public boolean changeUserPassword(String login, NewPassword newPassword) {
+        if (encoder.matches(newPassword.getCurrentPassword(), manager.loadUserByUsername(login).getPassword())) {
+            Optional<ru.skypro.homework.model.User> userOptional = userService
+                    .updatePassword(login, this.encoder.encode(newPassword.getNewPassword()));
+            if(userOptional.isPresent()) {
+                String role = userOptional.get().getRole();
+                manager.updateUser(User.builder()
+                        .passwordEncoder(this.encoder::encode)
+                        .password(newPassword.getNewPassword())
+                        .username(login)
+                        .roles(role)
+                        .build());
+                return true;
+            }
+        }
+        return false;
     }
 
 }

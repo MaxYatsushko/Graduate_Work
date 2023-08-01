@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skypro.homework.dto.Login;
 import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.model.Role;
 import ru.skypro.homework.service.AuthService;
-
+import static ru.skypro.homework.model.Role.USER;
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
@@ -31,8 +32,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Register register) {
-        if (authService.register(register)) {
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+        Role role = register.getRole() == null ? USER : register.getRole();
+        if (authService.register(register, role)) {
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
