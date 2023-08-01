@@ -89,7 +89,7 @@ public class User {
         this.firstName = firstName;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

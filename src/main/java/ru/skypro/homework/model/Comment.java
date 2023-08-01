@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
