@@ -1,19 +1,26 @@
 package ru.skypro.homework.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Data;
+import lombok.ToString;
+import org.hibernate.annotations.OnDeleteAction;
+import ru.skypro.homework.dto.CreateOrUpdateAdDto;
+import org.hibernate.annotations.OnDelete;
 
 import javax.persistence.*;
+import java.util.List;
 
+@Data
 @Entity
 @Table(name = "ads")
 public class Ad {
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private User author;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JoinColumn(name ="image_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Image image;
 
     @Id
@@ -21,32 +28,31 @@ public class Ad {
     private int id;
     private int price;
     private String title;
+    private String description;
 
-    /*
-    author	integer($int32)
-id автора объявления
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "id", orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ToString.Exclude
+    private List<Comment> adsComments;
 
-image	string
-ссылка на картинку объявления
+    public Ad(){}
 
-pk	integer($int32)
-id объявления
 
-price	integer($int32)
-цена объявления
-
-title	string
-
-заголовок объявления
-     */
-
-    public Ad(User author, Image  image, int id, int price, String title) {
-        this.author = author;
-        this.image = image;
-        this.id = id;
-        this.price = price;
-        this.title = title;
+    public Ad(User user, CreateOrUpdateAdDto newAd){
+        this.author = user;
+        this.price = newAd.getPrice();
+        this.title = newAd.getTitle();
+        this.description = newAd.getDescription();
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 
     public User getAuthor() {
         return author;

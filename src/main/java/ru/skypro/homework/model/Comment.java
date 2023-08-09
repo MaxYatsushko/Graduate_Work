@@ -1,42 +1,31 @@
 package ru.skypro.homework.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "comments")
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    LocalDateTime createdAt;
 
+    private long createdAt;
 
-    String text;
+    private String text;
 
-    /*
-    author	integer($int32)
+    @ManyToOne
+    @JoinColumn(name = "ad_id", nullable = false)
+    private Ad ad;
 
-id автора комментария
-authorImage	string
-
-ссылка на аватар автора комментария
-authorFirstName	string
-
-имя создателя комментария
-createdAt	integer($int64)
-
-дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970
-pk	integer($int32)
-
-id комментария
-text	string
-
-текст комментария
-     */
 
 }

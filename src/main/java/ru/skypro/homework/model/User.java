@@ -1,12 +1,20 @@
 package ru.skypro.homework.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -20,18 +28,26 @@ public class User {
     private String phone;
     private LocalDate regDate;
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "image_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Image image;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Collection<Ad> userAds;
+    //todo разобрать @OneToMany(mappedBy = "id", fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "author",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    @ToString.Exclude//todo ???
+    private List<Ad> userAds;
 
     public User(String email, String firstName, String lastName, String password, String phone,
-                LocalDate regDate, Image image, String role) {
+                LocalDate regDate, Image image, Role role) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -42,35 +58,12 @@ public class User {
         this.role = role;
     }
 
-    public User() {
+    public int getId() {
+        return id;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public CharSequence getPasswordCharSeq() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public Collection<Ad> getUserAds() {
-        return userAds;
-    }
-
-    public void setUserAds(Collection<Ad> userAds) {
-        this.userAds = userAds;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -89,20 +82,20 @@ public class User {
         this.firstName = firstName;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getLastName() {
         return lastName;
     }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPhone() {
@@ -129,20 +122,19 @@ public class User {
         this.image = image;
     }
 
+    public Role getRole() {
+        return role;
+    }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", id=" + id +
-                ", lastName='" + lastName + '\'' +
-                ", password='" + password + '\'' +
-                ", phone='" + phone + '\'' +
-                ", regDate='" + regDate + '\'' +
-                ", image='" + image + '\'' +
-                ", role='" + role + '\'' +
-                ", userAds=" + userAds +
-                '}';
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public List<Ad> getUserAds() {
+        return userAds;
+    }
+
+    public void setUserAds(List<Ad> userAds) {
+        this.userAds = userAds;
     }
 }
