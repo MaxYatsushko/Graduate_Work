@@ -15,14 +15,9 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-
     @GetMapping(value = "/images/{imageName}")
     public byte[] getImage(@PathVariable String imageName){
+
         return imageService.getImageBytes(imageName);
     }
-
-    //@GetMapping("{image}")
-    //public byte[] getImage(@PathVariable Image image){
-    //    return imageService.getImageBytesFromImage(image);
-    //}
 }

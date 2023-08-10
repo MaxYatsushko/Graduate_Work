@@ -17,13 +17,15 @@ public class AdsDto {
     public AdsDto() {}
 
     public AdsDto(List<Ad> ads) {
+
         this.count = ads.size();
+
         List<AdDto> responseAds = new ArrayList<>();
         for (Ad ad : ads) {
-            responseAds.add(AdsMapper.adToResponseAd(ad));
+            responseAds.add(AdsMapper.adToAdDto(ad));
         }
+
         Collections.shuffle(responseAds);
         this.results = responseAds;
-
     }
 }

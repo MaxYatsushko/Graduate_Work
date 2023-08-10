@@ -51,7 +51,6 @@ public class WebSecurityConfig {
                                        .mvcMatchers(AUTH_WHITELIST)
                                        .permitAll()
                                        .mvcMatchers("/ads/**", "/users/**")
-                                       //todo почему меняет на запятую? .mvcMatchers("/ads/**", "/users/**,")
                                        .authenticated())
                .cors()
                .and()

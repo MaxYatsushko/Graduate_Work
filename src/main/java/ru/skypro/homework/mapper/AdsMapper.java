@@ -12,23 +12,44 @@ import java.util.List;
 
 public class AdsMapper {
 
-    public static Ad createOrUpdateAdsToAd(Ad ad, CreateOrUpdateAdDto updateAd){
-        ad.setDescription(updateAd.getDescription());
-        ad.setPrice(updateAd.getPrice());
-        ad.setTitle(updateAd.getTitle());
+    /**
+     * updates ad via createOrUpdateAdDto
+     * @param ad - exist entity ad
+     * @param createOrUpdateAdDto - dto
+     * @return dd - updated ad
+     */
+    public static Ad updateAdFromCreateOrUpdateAdDto(Ad ad, CreateOrUpdateAdDto createOrUpdateAdDto){
+
+        ad.setDescription(createOrUpdateAdDto.getDescription());
+        ad.setPrice(createOrUpdateAdDto.getPrice());
+        ad.setTitle(createOrUpdateAdDto.getTitle());
+
         return ad;
     }
 
-    public static AdDto adToResponseAd(Ad ad){
+    /**
+     * creates adDto from ad
+     * @param ad
+     * @return adDto - created adDto
+     */
+    public static AdDto adToAdDto(Ad ad) {
+
         return new AdDto(
                 ad.getAuthor().getId(),
                 "/images/" + ad.getImage().getFileName(),
-                ad.getId(),ad.getPrice(),
+                ad.getId(),
+                ad.getPrice(),
                 ad.getTitle()
         );
     }
 
-    public static ExtendedAdDto adToResponseFullAd(Ad ad){
+    /**
+     * creates adToExtendedAdDto from ad
+     * @param ad
+     * @return adToExtendedAdDto - created adDto
+     */
+    public static ExtendedAdDto adToExtendedAdDto(Ad ad){
+
         return new ExtendedAdDto(
                 ad.getId(),
                 ad.getAuthor().getFirstName(),
@@ -42,15 +63,24 @@ public class AdsMapper {
         );
     }
 
-    public static AdsDto adsToResponseWrapperAds (List<Ad> ads){
+    /**
+     * creates AdsDto from list of ads
+     * @param ads - list of ads
+     * @return adsToAdsDto - created AdsDto
+     */
+    public static AdsDto adsToAdsDto (List<Ad> ads){
+
         AdsDto results = new AdsDto();
         results.setCount(ads.size());
+
         List<AdDto> responseAds= new ArrayList<>();
         for (Ad ad : ads) {
-            responseAds.add(adToResponseAd(ad));
+            responseAds.add(adToAdDto(ad));
         }
+
         Collections.shuffle(responseAds);
         results.setResults(responseAds);
+
         return results;
     }
 }

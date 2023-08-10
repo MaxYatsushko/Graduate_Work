@@ -8,8 +8,16 @@ import ru.skypro.homework.model.Image;
 import java.util.List;
 
 public class CommentsMapper {
-    public static CommentDto CommentToResponseComment(Comment comment){
+
+    /**
+     * creates CommentDto from list comment
+     * @param comment - Comment
+     * @return commentDto - created dto
+     */
+    public static CommentDto createCommentDtoFromComment(Comment comment){
+
         Image image = comment.getUser().getImage();
+
         return new CommentDto(
                 comment.getUser().getId(),
                 image == null? null: ("/images/" + image.getFileName()),
@@ -19,8 +27,13 @@ public class CommentsMapper {
                 comment.getText());
     }
 
-    public static CommentsDto CommentsToResponseWrapperComments(List<CommentDto> commentList){
-        return new CommentsDto(commentList.size(), commentList);
+    /**
+     * creates CommentsDto from list of CommentDto ad via createOrUpdateAdDto in db
+     * @param commentDtoList - list of CommentDto
+     * @return commentsDto - created dto
+     */
+    public static CommentsDto createCommentsDtoFromListCommnetDto(List<CommentDto> commentDtoList){
+        return new CommentsDto(commentDtoList.size(), commentDtoList);
     }
 
 }

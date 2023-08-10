@@ -21,101 +21,143 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class AdsService {
+public class AdService {
+
     private final UserService userService;
     private final AdRepository adRepository;
     private final ImageService imageService;
 
-    public AdsService(UserService userService, AdRepository adRepository, ImageService imageService) {
+    public AdService(UserService userService, AdRepository adRepository, ImageService imageService) {
         this.userService = userService;
         this.adRepository = adRepository;
         this.imageService = imageService;
     }
 
-    @NonNull
-    public String getAdAuthorName(Long id){
-        return Objects.requireNonNull(adRepository.findById(id)
-                .map(ad -> ad.getAuthor().getEmail()).orElseThrow(RuntimeException::new));
-    }
-
-    public Optional<Ad> getAdOptionalById(Long id){
+    /**
+     * gets ad by id from db
+     * @return Optional'<'Ad'>' - got ad if exists
+     */
+    public Optional<Ad> getAdOptionalById(Integer id){
         return adRepository.findById(id);
     }
 
+    /**
+     * gets AdsDto from list of ads from db
+     * @return AdsDto - created AdsDto
+     */
     public AdsDto getAllAds(){
         return new AdsDto(adRepository.findAll());
     }
 
+    /**
+     * gets users' ads by login
+     * @param login - string
+     * @return adsDto - dto with ads
+     */
     public AdsDto getMyAds(String login){
+
         Optional<User> userOptional = userService.getUserByLogin(login);
         if(userOptional.isEmpty())
             return new AdsDto(new ArrayList<>());
-        List<Ad> adsList = userOptional.get().getUserAds();
-        return AdsMapper.adsToResponseWrapperAds(userOptional.get().getUserAds());
+
+        return AdsMapper.adsToAdsDto(userOptional.get().getUserAds());
     }
-    public AdDto createOrUpdateAd(String login, MultipartFile image, CreateOrUpdateAdDto createOrUpdateAdsDto) {
+
+    /**
+     * creates ad and image in db. after creates AdDto as a response
+     * @param login - string
+     * @param image - MultipartFile
+     * @param createOrUpdateAdDto - CreateOrUpdateAdDto
+     * @return Optional'<'ExtendedAdDto'>' - extendedAdDto if exist
+     * @throws RuntimeException
+     */
+    public AdDto addAd(String login, MultipartFile image, CreateOrUpdateAdDto createOrUpdateAdDto) {
+
         Optional<User> userOptional = userService.getUserByLogin(login);
         if (userOptional.isEmpty())
             throw new RuntimeException("User not found!");
 
-        //TODO Check if addUpdate;
-
-        Ad newAd = adRepository.save(new Ad(userOptional.get(), createOrUpdateAdsDto));
+        Ad newAd = adRepository.save(new Ad(userOptional.get(), createOrUpdateAdDto));
 
         Image savedImage;
         try {
             savedImage = imageService.addAdImage(image, newAd.getId());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         newAd.setImage(savedImage);
-        return AdsMapper.adToResponseAd(adRepository.save(newAd));
+        return AdsMapper.adToAdDto(adRepository.save(newAd));
     }
 
-    public Optional<ExtendedAdDto> getResponseFullAd(Long id){
+    /**
+     * gets ad from db via id of ad
+     * @param id
+     * @return Optional'<'ExtendedAdDto'>' - extendedAdDto if exist ad by id
+     */
+    public Optional<ExtendedAdDto> getAd(Integer id){
+
         Optional<Ad> adOptional = adRepository.findById(id);
-
-        return adOptional.map(AdsMapper::adToResponseFullAd);
-
+        return adOptional.map(AdsMapper::adToExtendedAdDto);
     }
 
-
+    /**
+     * updates ad via createOrUpdateAdDto in db
+     * @param id - id of ad
+     * @param createOrUpdateAdDto - dto
+     * @return dd - updated ad if exists
+     */
     @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adsService.getAdAuthorName(#id)")
-    public Optional<AdDto> updateAd(Long id, CreateOrUpdateAdDto updatedAd) {
+    public Optional<AdDto> updateAd(Integer id, CreateOrUpdateAdDto createOrUpdateAdDto) {
+
         Optional<Ad> adOptional = adRepository.findById(id);
-        return adOptional.map(ad -> AdsMapper.adToResponseAd(
+        return adOptional.map(ad -> AdsMapper.adToAdDto(
                 adRepository.save(
-                        AdsMapper.createOrUpdateAdsToAd(ad, updatedAd)
+                        AdsMapper.updateAdFromCreateOrUpdateAdDto(ad, createOrUpdateAdDto)
                 )
         ));
     }
 
+    /**
+     * updates ad's image in db
+     * @param id - id of ad
+     * @param image - MultipartFile
+     * @return Optional'<'String'>' - filename
+     */
     @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adsService.getAdAuthorName(#id)")
-    public Optional<String> updateAdImage(Long id, MultipartFile image) {
-        //TODO What string to return(for now it's path);
+    public Optional<String> updateAdImage(Integer id, MultipartFile image) {
 
         Optional<Ad> adOptional = adRepository.findById(id);
         if(adOptional.isEmpty())
             return Optional.empty();
+
         Image newImage;
         try {
             newImage = imageService.addAdImage(image, id);
             Ad updatedAd  = adOptional.get();
             updatedAd.setImage(newImage);
+
             adRepository.save(updatedAd);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
         return Optional.of(newImage.getFileName());
     }
 
+    /**
+     * deletes ad from db via id
+     * @param id - id of ad
+     * @return Boolean - true if deleted
+     */
     @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adsService.getAdAuthorName(#id)")
-    public Boolean deleteAdById(Long id) {
+    public Boolean deleteAdById(Integer id) {
 
         Optional<Ad> adOptional = adRepository.findById(id);
-        if (adOptional.isEmpty()) {
+        if (adOptional.isEmpty())
             return false;
-        }
+
         adRepository.deleteById(id);
         return true;
     }

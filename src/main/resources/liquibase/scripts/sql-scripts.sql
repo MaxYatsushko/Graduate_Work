@@ -4,22 +4,22 @@
 CREATE TABLE images
 (
     id        SERIAL PRIMARY KEY,
-    file_name VARCHAR(255),
-    media_type VARCHAR(255)
+    file_name VARCHAR(250),
+    media_type VARCHAR(250)
 
 );
 
 CREATE TABLE users
 (
     id         SERIAL PRIMARY KEY,
-    email      VARCHAR(255) UNIQUE NOT NULL,
-    first_name VARCHAR(255),
-    last_name  VARCHAR(255),
-    password   VARCHAR(255),
-    phone      VARCHAR(255),
+    email      VARCHAR(50) UNIQUE NOT NULL,
+    first_name VARCHAR(30),
+    last_name  VARCHAR(30),
+    password   VARCHAR(20),
+    phone      VARCHAR(12),
     reg_date   DATE,
     image_id   INTEGER,
-    role       VARCHAR(255),
+    role       VARCHAR(15),
 
     FOREIGN KEY (image_id) REFERENCES images (id)
     ON DELETE CASCADE
@@ -32,8 +32,8 @@ CREATE TABLE ads
     user_id     INTEGER NOT NULL,
     image_id    INTEGER,
     price       INT,
-    title       VARCHAR(255),
-    description VARCHAR(255),
+    title       VARCHAR(50),
+    description VARCHAR(200),
 
     FOREIGN KEY (user_id) REFERENCES users (id)
     ON DELETE CASCADE,

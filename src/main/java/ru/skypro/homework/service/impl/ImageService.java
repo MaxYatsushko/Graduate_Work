@@ -29,43 +29,63 @@ public class ImageService {
     private final ImageRepository imageRepository;
 
     public ImageService(UserService userService, ImageRepository imageRepository) {
+
         this.userService = userService;
         this.imageRepository = imageRepository;
     }
 
+    /**
+     * updates user's image(avatar) if exists
+     * @param image - MultipartFile
+     * @param login - string
+     */
     public void updateUserAvatar(MultipartFile image, String login) throws IOException {
-        Optional<User> userOptional = userService.getUserByLogin(login);
-        if (userOptional.isEmpty()) {
-            return ;
-        }
-        User user = userOptional.get();
-        if (image == null ||image.getOriginalFilename()==null) {
-            return ;
-        }
-        String fileName = image.getOriginalFilename();
 
-        String newFileName = login.hashCode()
-                + "." +ImageProcessor.getExtension(fileName);
+        Optional<User> userOptional = userService.getUserByLogin(login);
+        if (userOptional.isEmpty())
+            return;
+
+        User user = userOptional.get();
+        if (image == null || image.getOriginalFilename() == null)
+            return;
+
+        String fileName = image.getOriginalFilename();
+        String newFileName = login.hashCode() + "." + ImageProcessor.getExtension(fileName);
 
         Path filepath = Path.of(imageDir, newFileName);
         Image newImage = processImage(image, filepath, newFileName);
         user.setImage(imageRepository.save(newImage));
         userService.updateUserImage(user);
     }
-    public Image addAdImage(MultipartFile image, long adId) throws IOException {
 
-        if (image == null ||image.getOriginalFilename()==null)
+    /**
+     * saves image to db
+     * @param image - MultipartFile
+     * @return image
+     * @throws IOException
+     */
+    public Image addAdImage(MultipartFile image, Integer idAd) throws IOException {
+
+        if (image == null || image.getOriginalFilename()==null)
             throw new InputMismatchException();
 
         String fileName = image.getOriginalFilename();
-        String newFileName = "ad_"+adId + "." +ImageProcessor.getExtension(fileName);
+        String newFileName = "ad_" + idAd + "." + ImageProcessor.getExtension(fileName);
 
         Path filepath = Path.of(imageDir, newFileName);
-
-        return imageRepository.save(processImage(image, filepath,newFileName));
+        return imageRepository.save(processImage(image, filepath, newFileName));
     }
 
-    private Image processImage(MultipartFile image, Path filepath,String filename) throws IOException {
+    /**
+     * creates or updates image
+     * @param image - MultipartFile
+     * @param filepath - Path
+     * @param filename - string
+     * @return image
+     * @throws IOException
+     */
+    private Image processImage(MultipartFile image, Path filepath, String filename) throws IOException {
+
         Files.createDirectories(filepath.getParent());
         Files.deleteIfExists(filepath);
 
@@ -76,39 +96,47 @@ public class ImageService {
         ) {
             bis.transferTo(bos);
         }
+
         Image newImage;
-        if(imageRepository.existsByFileName(filename)) {
+        if(imageRepository.existsByFileName(filename))
             newImage = imageRepository.findByFileName(filename);
-        }
         else
             newImage = new Image();
+
         newImage.setFileName(filename);
         newImage.setMediaType(image.getContentType());
 
         return newImage;
     }
 
-    public byte[] getImageBytes(String imageName)  {
+    /**
+     * gets bytes of image
+     * @param imageName - string
+     * @return byte[]
+     * @throws IOException
+     */
+    public byte[] getImageBytes(String imageName) {
+
         String path = imageDir + "/" + imageName;
         BufferedImage bufferedImage;
         byte[] result;
+
         try {
             bufferedImage = ImageIO.read(new File(path));
             result = toByteArray(bufferedImage, StringUtils.getFilenameExtension(imageName));
-        }catch (IOException e){
-            throw new RuntimeException("Image Exception, " + e.getMessage());
+        }
+        catch (IOException e) {
+            throw new RuntimeException("getImageBytes Exception, " + e.getMessage());
         }
 
         return result;
     }
 
-    public static byte[] toByteArray(BufferedImage bi, String format)
-            throws IOException {
+    private static byte[] toByteArray(BufferedImage bi, String format) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bi, format, baos);
         return baos.toByteArray();
-
     }
 
 }
