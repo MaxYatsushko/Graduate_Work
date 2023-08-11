@@ -1,6 +1,7 @@
 package ru.skypro.homework.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDto;
@@ -36,18 +37,20 @@ public class CommentController {
                         .build());
     }
 
-    @DeleteMapping("{adId}/comments/{commentsId}")
-    public ResponseEntity<?> deleteCommentFromAd(@PathVariable("adId") Integer adId, @PathVariable("commentsId") Integer commentsId) {
+    @DeleteMapping("{adId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @commentService.getCommentAuthorNameByCommentId(#commentsId)")
+    public ResponseEntity<?> deleteCommentFromAd(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId) {
 
-        if(commentService.deleteCommentFromAd(adId, commentsId))
+        if(commentService.deleteCommentFromAd(adId, commentId))
             return ResponseEntity.ok().build();
 
         return ResponseEntity.notFound().build();
     }
 
-    @PatchMapping("{adId}/comments/{commentsId}")
+    @PatchMapping("{adId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @commentService.getCommentAuthorNameByCommentId(#commentId)")
     public ResponseEntity<CommentDto> updateCommentFromAd(@PathVariable("adId") Integer adId,
-                                                     @PathVariable("commentsId") Integer commentId,
+                                                     @PathVariable("commentId") Integer commentId,
                                                      @RequestBody CreateOrUpdateCommentDto updatedComment) {
 
         return commentService.updateCommentFromAd(adId, commentId, updatedComment)

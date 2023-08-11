@@ -15,7 +15,7 @@ CREATE TABLE users
     email      VARCHAR(50) UNIQUE NOT NULL,
     first_name VARCHAR(30),
     last_name  VARCHAR(30),
-    password   VARCHAR(20),
+    password   VARCHAR(60),
     phone      VARCHAR(12),
     reg_date   DATE,
     image_id   INTEGER,

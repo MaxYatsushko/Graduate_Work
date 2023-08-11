@@ -8,6 +8,7 @@ import ru.skypro.homework.dto.CreateOrUpdateAdDto;
 import ru.skypro.homework.dto.AdDto;
 import ru.skypro.homework.dto.ExtendedAdDto;
 import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.exceptions.UserException;
 import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Image;
@@ -16,7 +17,6 @@ import ru.skypro.homework.repository.AdRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -69,13 +69,13 @@ public class AdService {
      * @param image - MultipartFile
      * @param createOrUpdateAdDto - CreateOrUpdateAdDto
      * @return Optional'<'ExtendedAdDto'>' - extendedAdDto if exist
-     * @throws RuntimeException
+     * @throws UserException
      */
     public AdDto addAd(String login, MultipartFile image, CreateOrUpdateAdDto createOrUpdateAdDto) {
 
         Optional<User> userOptional = userService.getUserByLogin(login);
         if (userOptional.isEmpty())
-            throw new RuntimeException("User not found!");
+            throw new UserException("User not found!");
 
         Ad newAd = adRepository.save(new Ad(userOptional.get(), createOrUpdateAdDto));
 
@@ -108,7 +108,6 @@ public class AdService {
      * @param createOrUpdateAdDto - dto
      * @return dd - updated ad if exists
      */
-    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adsService.getAdAuthorName(#id)")
     public Optional<AdDto> updateAd(Integer id, CreateOrUpdateAdDto createOrUpdateAdDto) {
 
         Optional<Ad> adOptional = adRepository.findById(id);
@@ -125,7 +124,6 @@ public class AdService {
      * @param image - MultipartFile
      * @return Optional'<'String'>' - filename
      */
-    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adsService.getAdAuthorName(#id)")
     public Optional<String> updateAdImage(Integer id, MultipartFile image) {
 
         Optional<Ad> adOptional = adRepository.findById(id);
@@ -151,7 +149,6 @@ public class AdService {
      * @param id - id of ad
      * @return Boolean - true if deleted
      */
-    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adsService.getAdAuthorName(#id)")
     public Boolean deleteAdById(Integer id) {
 
         Optional<Ad> adOptional = adRepository.findById(id);
@@ -160,5 +157,16 @@ public class AdService {
 
         adRepository.deleteById(id);
         return true;
+    }
+
+    /**
+     * gets name of ad's author
+     * @param id - id of ad
+     * @return string - AuthorName
+     * @throws UserException
+     */
+    public String getAdAuthorName(Integer id){
+        return Objects.requireNonNull(adRepository.findById(id)
+                .map(ad -> ad.getAuthor().getEmail()).orElseThrow(() -> new UserException("Name of author by id of ad did not find")));
     }
 }

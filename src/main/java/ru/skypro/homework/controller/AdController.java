@@ -3,6 +3,7 @@ package ru.skypro.homework.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +49,7 @@ public class AdController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adService.getAdAuthorName(#id)")
     public ResponseEntity<?> removeAd(@PathVariable("id") Integer id) {
 
         if(adService.deleteAdById(id))
@@ -57,6 +59,7 @@ public class AdController {
     }
 
     @PatchMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adService.getAdAuthorName(#id)")
     public ResponseEntity<AdDto> updateAds(@PathVariable("id") Integer id,
                                            @RequestBody CreateOrUpdateAdDto updatedAd) {
 
@@ -78,6 +81,7 @@ public class AdController {
     }
 
     @PatchMapping("{id}/image")
+    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adService.getAdAuthorName(#id)")
     public ResponseEntity<?> updateAdImage(@PathVariable("id") Integer id,
                                            @RequestPart MultipartFile image) {
 

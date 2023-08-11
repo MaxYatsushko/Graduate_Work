@@ -53,7 +53,7 @@ public class UserService {
                 .forEach(user -> result.add(org.springframework.security.core.userdetails.User.builder()
                                 .username(user.getEmail())
                                 .password(user.getPassword())
-                                .roles(Role.USER.name())
+                                .roles(user.getRole().name())
                                 .build()
                         )
                 );
