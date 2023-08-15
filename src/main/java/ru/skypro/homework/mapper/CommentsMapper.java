@@ -2,6 +2,7 @@ package ru.skypro.homework.mapper;
 
 import ru.skypro.homework.dto.CommentDto;
 import ru.skypro.homework.dto.CommentsDto;
+import ru.skypro.homework.dto.CreateOrUpdateCommentDto;
 import ru.skypro.homework.model.Comment;
 import ru.skypro.homework.model.Image;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class CommentsMapper {
 
     /**
-     * creates CommentDto from list comment
+     * creates CommentDto from comment
      * @param comment - Comment
      * @return commentDto - created dto
      */
