@@ -1,5 +1,7 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,6 +25,14 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Login", tags = "Authorization",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200", description = "OK"),
+                    @ApiResponse(
+                            responseCode = "401", description = "Unauthorized")
+            }
+    )
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto login) {
 
@@ -33,6 +43,14 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Register", tags = "Registration",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201", description = "Created"),
+                    @ApiResponse(
+                            responseCode = "400", description = "Bad Request")
+            }
+    )
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto register) {
 

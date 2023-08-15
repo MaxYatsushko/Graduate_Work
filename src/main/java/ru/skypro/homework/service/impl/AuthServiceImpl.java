@@ -25,6 +25,12 @@ public class AuthServiceImpl implements AuthService {
         this.userService = userService;
     }
 
+    /**
+     * checks existing user by login and password
+     * @param userName - string
+     * @param password - string
+     * @return boolean - result if exists
+     */
     @Override
     public boolean login(String userName, String password) {
 
@@ -35,6 +41,12 @@ public class AuthServiceImpl implements AuthService {
         return encoder.matches(password, userDetails.getPassword());
     }
 
+    /**
+     * creates user at db if does not exist
+     * @param register - dto RegisterDto
+     * @param role - Role
+     * @return boolean - result if was created
+     */
     @Override
     public boolean register(RegisterDto register, Role role) {
 
@@ -53,6 +65,12 @@ public class AuthServiceImpl implements AuthService {
         return true;
     }
 
+    /**
+     * changes password of user
+     * @param login - string
+     * @param newPassword - dto NewPasswordDto
+     * @return boolean - result if password changed
+     */
     @Override
     public boolean changeUserPassword(String login, NewPasswordDto newPassword) {
 

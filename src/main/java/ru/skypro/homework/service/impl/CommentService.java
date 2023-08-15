@@ -1,11 +1,13 @@
 package ru.skypro.homework.service.impl;
 
+import lombok.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import ru.skypro.homework.dto.CommentsDto;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDto;
 import ru.skypro.homework.dto.CommentDto;
+import ru.skypro.homework.exceptions.UserException;
 import ru.skypro.homework.mapper.CommentsMapper;
 import ru.skypro.homework.model.Ad;
 import ru.skypro.homework.model.Comment;
@@ -34,7 +36,7 @@ public class CommentService {
      * @param id - id of ad
      * @param createdCommentDto - dto of new comment
      * @return Optional'<'CommentDto'>' - created dto
-     * @throws RuntimeException
+     * @throws UserException
      */
     public Optional<CommentDto> createComment(Integer id, CreateOrUpdateCommentDto createdCommentDto, String login) {
 
@@ -44,7 +46,7 @@ public class CommentService {
 
         Optional<User> userOptional = userService.getUserByLogin(login);
         if(userOptional.isEmpty()){
-            throw new RuntimeException("User not found!");
+            throw new UserException("User not found!");
         }
 
         Comment comment = new Comment();
@@ -78,7 +80,6 @@ public class CommentService {
      * @param idComment - id of comment
      * @return boolean - result
      */
-    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @commentService.getCommentAuthorNameByCommentId(#commentId)")
     public boolean deleteCommentFromAd(Integer idAd, Integer idComment) {
 
         if(!commentsRepository.existsById(idComment))
@@ -95,7 +96,6 @@ public class CommentService {
      * @param updatedCommentDto - dto CreateOrUpdateCommentDto
      * @return Optional'<'CommentDto'>' - created dto bases on updated comment
      */
-    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @commentService.getCommentAuthorNameByCommentId(#commentId)")
     public Optional<CommentDto> updateCommentFromAd(Integer idAd, Integer idComment, CreateOrUpdateCommentDto updatedCommentDto) {
 
         Optional<Comment> commentOptional = commentsRepository.findById(idComment);
@@ -106,5 +106,17 @@ public class CommentService {
         comment.setText(updatedCommentDto.getText());
 
         return Optional.of(CommentsMapper.createCommentDtoFromComment(commentsRepository.save(comment)));
+    }
+
+    /**
+     * gets name of author if exists
+     * @param id - id of comment
+     * @return string - AuthorName
+     * @throws UserException
+     */
+    public String getCommentAuthorNameByCommentId(Integer id){
+        return commentsRepository.findById(id)
+                .map(comment-> comment.getUser().getEmail())
+                .orElseThrow(() -> new UserException("Name of author by commentId did not find"));
     }
 }
