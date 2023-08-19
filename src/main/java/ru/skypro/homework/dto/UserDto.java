@@ -23,5 +23,6 @@ public class UserDto {
         this.lastName = lastName;
         this.phone = phone;
         this.image = image;
+        this.role = role;
     }
 }

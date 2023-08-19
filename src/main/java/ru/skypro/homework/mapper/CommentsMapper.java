@@ -10,7 +10,7 @@ import java.util.List;
 public class CommentsMapper {
 
     /**
-     * creates CommentDto from list comment
+     * creates CommentDto from comment
      * @param comment - Comment
      * @return commentDto - created dto
      */
@@ -20,7 +20,7 @@ public class CommentsMapper {
 
         return new CommentDto(
                 comment.getUser().getId(),
-                image == null? null: ("/images/" + image.getFileName()),
+                image == null ? null : ("/images/" + image.getFileName()),
                 comment.getUser().getFirstName(),
                 comment.getCreatedAt(),
                 comment.getId(),
@@ -32,7 +32,7 @@ public class CommentsMapper {
      * @param commentDtoList - list of CommentDto
      * @return commentsDto - created dto
      */
-    public static CommentsDto createCommentsDtoFromListCommnetDto(List<CommentDto> commentDtoList){
+    public static CommentsDto createCommentsDtoFromListCommentDto(List<CommentDto> commentDtoList){
         return new CommentsDto(commentDtoList.size(), commentDtoList);
     }
 

@@ -38,7 +38,6 @@ public class UserService {
                         encodedPassword,
                         registerDto.getPhone(),
                         LocalDate.now(),
-                        null,
                         role));
     }
 
@@ -90,8 +89,9 @@ public class UserService {
     public Optional<User> updatePassword(String login, String newPassword) {
 
         Optional<User> userOptional = userRepository.findByEmailIgnoreCase(login);
-        if (userOptional.isEmpty())
+        if (userOptional.isEmpty()) {
             return Optional.empty();
+        }
 
         User user = userOptional.get();
         user.setPassword(newPassword);

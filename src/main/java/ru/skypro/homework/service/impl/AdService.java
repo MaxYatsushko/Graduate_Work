@@ -1,7 +1,5 @@
 package ru.skypro.homework.service.impl;
 
-import lombok.NonNull;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.CreateOrUpdateAdDto;
@@ -57,9 +55,9 @@ public class AdService {
     public AdsDto getMyAds(String login){
 
         Optional<User> userOptional = userService.getUserByLogin(login);
-        if(userOptional.isEmpty())
+        if(userOptional.isEmpty()) {
             return new AdsDto(new ArrayList<>());
-
+        }
         return AdsMapper.adsToAdsDto(userOptional.get().getUserAds());
     }
 
@@ -74,8 +72,9 @@ public class AdService {
     public AdDto addAd(String login, MultipartFile image, CreateOrUpdateAdDto createOrUpdateAdDto) {
 
         Optional<User> userOptional = userService.getUserByLogin(login);
-        if (userOptional.isEmpty())
+        if (userOptional.isEmpty()){
             throw new UserException("User not found!");
+        }
 
         Ad newAd = adRepository.save(new Ad(userOptional.get(), createOrUpdateAdDto));
 
@@ -127,8 +126,9 @@ public class AdService {
     public Optional<String> updateAdImage(Integer id, MultipartFile image) {
 
         Optional<Ad> adOptional = adRepository.findById(id);
-        if(adOptional.isEmpty())
+        if(adOptional.isEmpty()) {
             return Optional.empty();
+        }
 
         Image newImage;
         try {
@@ -152,8 +152,9 @@ public class AdService {
     public Boolean deleteAdById(Integer id) {
 
         Optional<Ad> adOptional = adRepository.findById(id);
-        if (adOptional.isEmpty())
+        if (adOptional.isEmpty()) {
             return false;
+        }
 
         adRepository.deleteById(id);
         return true;

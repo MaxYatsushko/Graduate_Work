@@ -1,5 +1,9 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +18,6 @@ import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.service.impl.ImageService;
 import ru.skypro.homework.service.impl.UserService;
 import java.io.IOException;
-import java.util.Optional;
 
 
 @RestController
@@ -32,6 +35,14 @@ public class UserController {
         this.imageService = imageService;
     }
 
+    @Operation(summary = "Set password of user", tags = "Users",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200", description = "OK"),
+                    @ApiResponse(
+                            responseCode = "403", description = "Forbidden")
+            }
+    )
     @PostMapping("set_password")
     public ResponseEntity<?> setPassword(@RequestBody NewPasswordDto newPassword) {
 
@@ -44,6 +55,16 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
+    @Operation(summary = "Get user", tags = "Users",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200", description = "OK",
+                            content = {@Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDto.class))}),
+                    @ApiResponse(
+                            responseCode = "401", description = "Unauthorized")
+            }
+    )
     @GetMapping("me")
     public ResponseEntity<UserDto> getUser() {
 
@@ -57,6 +78,16 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
     }
 
+    @Operation(summary = "Update user", tags = "Users",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200", description = "OK",
+                            content = {@Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UpdateUserDto.class))}),
+                    @ApiResponse(
+                            responseCode = "401", description = "Unauthorized")
+            }
+    )
     @PatchMapping("me")
     public ResponseEntity<UpdateUserDto> updateUser(@RequestBody UpdateUserDto userUpdateDto) {
 
@@ -71,6 +102,14 @@ public class UserController {
                        .build());
     }
 
+    @Operation(summary = "Update avatar of user", tags = "Users",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200", description = "OK"),
+                    @ApiResponse(
+                            responseCode = "401", description = "Unauthorized")
+            }
+    )
     @PatchMapping(value = "me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Image> updateUserImage(@RequestPart  MultipartFile image)  throws IOException {
 

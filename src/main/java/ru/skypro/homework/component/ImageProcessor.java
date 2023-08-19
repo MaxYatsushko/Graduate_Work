@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,9 +17,11 @@ import java.nio.file.Path;
 public class ImageProcessor {
 
     public static byte[] generateImagePreview(Path filePath) throws IOException {
+
         try (InputStream is = Files.newInputStream(filePath);
              BufferedInputStream bis = new BufferedInputStream(is, 1024);
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
             BufferedImage image = ImageIO.read(bis);
             int height = image.getHeight() / (image.getWidth() / 100);
             BufferedImage preview = new BufferedImage(100, height, image.getType());

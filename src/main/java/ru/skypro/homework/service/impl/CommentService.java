@@ -1,7 +1,5 @@
 package ru.skypro.homework.service.impl;
 
-import lombok.NonNull;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import ru.skypro.homework.dto.CommentsDto;
@@ -41,11 +39,12 @@ public class CommentService {
     public Optional<CommentDto> createComment(Integer id, CreateOrUpdateCommentDto createdCommentDto, String login) {
 
         Optional<Ad> adOptional = adService.getAdOptionalById(id);
-        if(adOptional.isEmpty())
+        if(adOptional.isEmpty()) {
             return Optional.empty();
+        }
 
         Optional<User> userOptional = userService.getUserByLogin(login);
-        if(userOptional.isEmpty()){
+        if(userOptional.isEmpty()) {
             throw new UserException("User not found!");
         }
 
@@ -71,7 +70,7 @@ public class CommentService {
                 sorted(new CommentsComparator()).
                 collect(Collectors.toList());
 
-        return CommentsMapper.createCommentsDtoFromListCommnetDto(responseCommentList);
+        return CommentsMapper.createCommentsDtoFromListCommentDto(responseCommentList);
     }
 
     /**
@@ -82,8 +81,9 @@ public class CommentService {
      */
     public boolean deleteCommentFromAd(Integer idAd, Integer idComment) {
 
-        if(!commentsRepository.existsById(idComment))
+        if(!commentsRepository.existsById(idComment)) {
             return false;
+        }
 
         commentsRepository.deleteById(idComment);
         return true;
@@ -99,8 +99,9 @@ public class CommentService {
     public Optional<CommentDto> updateCommentFromAd(Integer idAd, Integer idComment, CreateOrUpdateCommentDto updatedCommentDto) {
 
         Optional<Comment> commentOptional = commentsRepository.findById(idComment);
-        if(commentOptional.isEmpty())
+        if(commentOptional.isEmpty()) {
             return Optional.empty();
+        }
 
         Comment comment = commentOptional.get();
         comment.setText(updatedCommentDto.getText());
