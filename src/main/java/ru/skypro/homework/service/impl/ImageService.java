@@ -42,12 +42,14 @@ public class ImageService {
     public void updateUserAvatar(MultipartFile image, String login) throws IOException {
 
         Optional<User> userOptional = userService.getUserByLogin(login);
-        if (userOptional.isEmpty())
+        if (userOptional.isEmpty()) {
             return;
+        }
 
         User user = userOptional.get();
-        if (image == null || image.getOriginalFilename() == null)
+        if (image == null || image.getOriginalFilename() == null) {
             return;
+        }
 
         String fileName = image.getOriginalFilename();
         String newFileName = login.hashCode() + "." + ImageProcessor.getExtension(fileName);
@@ -66,8 +68,9 @@ public class ImageService {
      */
     public Image addAdImage(MultipartFile image, Integer idAd) throws IOException {
 
-        if (image == null || image.getOriginalFilename()==null)
+        if (image == null || image.getOriginalFilename() == null) {
             throw new InputMismatchException();
+        }
 
         String fileName = image.getOriginalFilename();
         String newFileName = "ad_" + idAd + "." + ImageProcessor.getExtension(fileName);
@@ -98,10 +101,12 @@ public class ImageService {
         }
 
         Image newImage;
-        if(imageRepository.existsByFileName(filename))
+        if(imageRepository.existsByFileName(filename)) {
             newImage = imageRepository.findByFileName(filename);
-        else
+        }
+        else {
             newImage = new Image();
+        }
 
         newImage.setFileName(filename);
         newImage.setMediaType(image.getContentType());

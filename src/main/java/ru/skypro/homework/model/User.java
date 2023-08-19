@@ -43,14 +43,14 @@ public class User {
     private List<Ad> userAds;
 
     public User(String email, String firstName, String lastName, String password, String phone,
-                LocalDate regDate, Image image, Role role) {
+                LocalDate regDate, Role role) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.phone = phone;
         this.regDate = regDate;
-        this.image = image;
+        this.image = null;
         this.role = role;
     }
 

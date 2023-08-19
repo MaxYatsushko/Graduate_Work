@@ -34,8 +34,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean login(String userName, String password) {
 
-        if (!manager.userExists(userName))
+        if (!manager.userExists(userName)) {
             return false;
+        }
 
         UserDetails userDetails = manager.loadUserByUsername(userName);
         return encoder.matches(password, userDetails.getPassword());
@@ -50,8 +51,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean register(RegisterDto register, Role role) {
 
-        if (manager.userExists(register.getUsername()))
+        if (manager.userExists(register.getUsername())) {
             return false;
+        }
 
         manager.createUser(
                 User.builder()
@@ -74,13 +76,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean changeUserPassword(String login, NewPasswordDto newPassword) {
 
-        if (!encoder.matches(newPassword.getCurrentPassword(), manager.loadUserByUsername(login).getPassword()))
+        if (!encoder.matches(newPassword.getCurrentPassword(), manager.loadUserByUsername(login).getPassword())) {
             return false;
+        }
 
         Optional<ru.skypro.homework.model.User> userOptional = userService
                 .updatePassword(login, this.encoder.encode(newPassword.getNewPassword()));
-        if (userOptional.isEmpty())
+        if (userOptional.isEmpty()) {
             return false;
+        }
 
         Role role = userOptional.get().getRole();
         manager.updateUser(User.builder()

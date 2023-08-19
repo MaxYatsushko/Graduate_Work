@@ -19,7 +19,7 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @Operation(summary = "Get inage", tags = "Images",
+    @Operation(summary = "Get image", tags = "Images",
             responses = {
                     @ApiResponse(
                             responseCode = "200", description = "OK",

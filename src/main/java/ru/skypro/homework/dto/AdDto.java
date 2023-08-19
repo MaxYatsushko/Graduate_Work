@@ -12,6 +12,7 @@ public class AdDto {
     private String title;
 
     public AdDto(int author, String image, int pk, int price, String title) {
+
         this.author = author;
         this.image = image;
         this.pk = pk;

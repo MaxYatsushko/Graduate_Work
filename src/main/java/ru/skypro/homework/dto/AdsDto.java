@@ -5,7 +5,6 @@ import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.model.Ad;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -25,7 +24,6 @@ public class AdsDto {
             responseAds.add(AdsMapper.adToAdDto(ad));
         }
 
-        Collections.shuffle(responseAds);
         this.results = responseAds;
     }
 }
