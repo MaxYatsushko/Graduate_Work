@@ -33,4 +33,4 @@ Write the command line "docker run --rm -p 3000:3000 ghcr.io/bizinmitya/front-re
 
 ### Contact
 
-Malsim Iatsushko - [@my linkedin](www.linkedin.com/in/iatsushko) - maxiatsushko@gmail.com
+Malsim Iatsushko - [my linkedin](href="www.linkedin.com/in/iatsushko") - maxiatsushko@gmail.com
