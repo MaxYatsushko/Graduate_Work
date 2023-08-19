@@ -78,7 +78,7 @@ public class CommentController {
             }
     )
     @DeleteMapping("{adId}/comments/{commentId}")
-    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @commentService.getCommentAuthorNameByCommentId(#commentsId)")
+    @PreAuthorize("hasRole('ADMIN') OR authentication.name == @commentService.getCommentAuthorNameByCommentId(#commentId)")
     public ResponseEntity<?> deleteCommentFromAd(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId) {
 
         if(commentService.deleteCommentFromAd(adId, commentId)){
