@@ -2,7 +2,6 @@ package ru.skypro.homework.mapper;
 
 import ru.skypro.homework.dto.CommentDto;
 import ru.skypro.homework.dto.CommentsDto;
-import ru.skypro.homework.dto.CreateOrUpdateCommentDto;
 import ru.skypro.homework.model.Comment;
 import ru.skypro.homework.model.Image;
 
@@ -21,7 +20,7 @@ public class CommentsMapper {
 
         return new CommentDto(
                 comment.getUser().getId(),
-                image == null? null: ("/images/" + image.getFileName()),
+                image == null ? null : ("/images/" + image.getFileName()),
                 comment.getUser().getFirstName(),
                 comment.getCreatedAt(),
                 comment.getId(),
@@ -33,7 +32,7 @@ public class CommentsMapper {
      * @param commentDtoList - list of CommentDto
      * @return commentsDto - created dto
      */
-    public static CommentsDto createCommentsDtoFromListCommnetDto(List<CommentDto> commentDtoList){
+    public static CommentsDto createCommentsDtoFromListCommentDto(List<CommentDto> commentDtoList){
         return new CommentsDto(commentDtoList.size(), commentDtoList);
     }
 

@@ -99,9 +99,9 @@ public class AdController {
     @PreAuthorize("hasRole('ADMIN') OR authentication.name == @adService.getAdAuthorName(#id)")
     public ResponseEntity<?> removeAd(@PathVariable("id") Integer id) {
 
-        if(adService.deleteAdById(id))
+        if(adService.deleteAdById(id)) {
             return ResponseEntity.noContent().build();
-
+        }
         return ResponseEntity.notFound().build();
     }
 
@@ -171,8 +171,9 @@ public class AdController {
                                            @RequestPart MultipartFile image) {
 
         Optional<String> responseStringOptional = adService.updateAdImage(id, image);
-        if(responseStringOptional.isEmpty())
+        if(responseStringOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
+        }
 
         return ResponseEntity.ok(responseStringOptional.get());
     }

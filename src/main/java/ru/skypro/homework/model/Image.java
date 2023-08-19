@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Data
 @Table(name = "images")
 public class Image {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

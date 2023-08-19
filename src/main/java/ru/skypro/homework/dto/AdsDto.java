@@ -25,7 +25,6 @@ public class AdsDto {
             responseAds.add(AdsMapper.adToAdDto(ad));
         }
 
-        Collections.shuffle(responseAds);
         this.results = responseAds;
     }
 }
