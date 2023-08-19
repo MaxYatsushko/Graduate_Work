@@ -1,7 +1,5 @@
 package ru.skypro.homework.service.impl;
 
-import lombok.NonNull;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import ru.skypro.homework.dto.CommentsDto;
